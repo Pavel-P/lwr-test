@@ -1,0 +1,9 @@
+[submodule "kuka_lwr"]
+	path = kuka_lwr
+	url = https://github.com/Pavel-P/kuka-lwr.git
+[submodule "descartes"]
+	path = descartes
+	url = https://github.com/Pavel-P/descartes.git
+[submodule "robotiq"]
+	path = robotiq
+	url = https://github.com/Pavel-P/robotiq.git
