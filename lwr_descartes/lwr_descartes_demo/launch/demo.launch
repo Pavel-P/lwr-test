@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="demo_node"
+          pkg="lwr_descartes_demo"
+          type="demo"
+          output="screen"
+          args=""/>
+</launch>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robotiq_hand">
+<xacro:include filename="$(find robotiq_s_model_visualization)/cfg/robotiq_hand_macro.urdf.xacro"/>
+
+    <link name="EE_LINK"/>
+    <xacro:robotiq_hand prefix="l_" reflect="-1" parent="EE_LINK"> 
+        <origin xyz="0 0 0" rpy="${3.1415926/2} 0 0"/>
+    </xacro:robotiq_hand>
+
+</robot>

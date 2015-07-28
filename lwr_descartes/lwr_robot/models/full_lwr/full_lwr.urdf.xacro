@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--NOTE: to modify robot model (change grippers, etc.)
+          change this file and convert > urdf > sdf  -->
+    <!--Include model macros-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="full_lwr">
+    <xacro:include filename="$(find lwr_description)/model/kuka_lwr.urdf.xacro"/>
+    <xacro:include filename="$(find robotiq_s_model_visualization)/cfg/robotiq_hand_macro.urdf.xacro"/>
+
+    <link name="world"/>
+
+    <xacro:kuka_lwr parent="world" name="lwr">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:kuka_lwr>
+
+    <xacro:robotiq_hand prefix="l_" reflect="-1" parent="lwr_7_link"> 
+        <origin xyz="0 0 0.0445" rpy="${3.1415926/2} 0 0"/>
+    </xacro:robotiq_hand>
+
+    <gazebo>
+        <plugin filename="libRobotiqHandPlugin.so" name="robotiq_controller">
+            <side>left</side>
+            <kp_position>8</kp_position>
+            <robotName>full_lwr</robotName>
+        </plugin>
+    </gazebo>
+
+</robot>

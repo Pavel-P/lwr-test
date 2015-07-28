@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+    <world name="simple">
+        <physics default="true" type="ode">
+            <ode>
+                <solver>
+                <iters>100</iters>
+                </solver>
+            </ode>
+        </physics>
+        <include>
+            <uri>model://ground_plane</uri>
+        </include>
+        <include>
+            <uri>model://sun</uri>
+        </include>
+        <include>
+            <uri>model://lwr_robot/models/full_lwr</uri>
+        </include>
+        <include>
+            <uri>model://washer</uri>
+            <name>washer_0</name>
+            <pose>0.375 0.375 0.2 0 0 0</pose>
+            <static>true</static>
+        </include>
+        <include>
+            <uri>model://washer</uri>
+            <name>washer_1</name>
+            <pose>-0.375 -0.375 0.35 0 0 0</pose>
+            <static>true</static>
+        </include>
+        <include>
+            <name>box_0</name>
+            <uri>model://lwr_robot/models/small_box</uri>
+            <pose>0.375 0.375 0.1 0 0 0</pose>
+            <static>true</static>
+        </include>
+        <include>
+            <name>box_1</name>
+            <uri>model://lwr_robot/models/big_box</uri>
+            <pose>-0.375 -0.375 0.175 0 0 0</pose>
+            <static>true</static>
+        </include>
+        <include>
+            <uri>model://metal_peg</uri>
+            <pose>0.375 0.375 0.2 0 0 0</pose>
+        </include>
+    </world>
+</sdf>
