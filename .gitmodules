@@ -7,3 +7,6 @@
 [submodule "robotiq"]
 	path = robotiq
 	url = https://github.com/Pavel-P/robotiq.git
+[submodule "ros_control"]
+	path = ros_control
+	url = https://github.com/CentroEPiaggio/ros_control.git
