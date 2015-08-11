@@ -65,5 +65,3 @@ full_lwr:
     - TRRTkConfigDefault
     - PRMkConfigDefault
     - PRMstarkConfigDefault
-  projection_evaluator: joints(lwr_0_joint,lwr_1_joint)
-  longest_valid_segment_fraction: 0.05
