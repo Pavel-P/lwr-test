@@ -3,7 +3,7 @@
     <link name='EE_LINK'>
       <pose>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 0 -0 0</pose>
+        <pose>0 0 0.0445 0 -0 0</pose>
         <mass>1.3</mass>
         <inertia>
           <ixx>0.0035</ixx>
@@ -15,7 +15,7 @@
         </inertia>
       </inertial>
       <collision name='EE_LINK_collision'>
-        <pose>0 0 0 1.5708 -0 0</pose>
+        <pose>0 0 0.0445 1.5708 -0 0</pose>
         <geometry>
           <box>
             <size>0.1 0.1 0.1</size>
@@ -23,7 +23,7 @@
         </geometry>
       </collision>
       <visual name='EE_LINK_visual'>
-        <pose>0 0 0 1.5708 -0 0</pose>
+        <pose>0 0 0.0445 1.5708 -0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
@@ -36,7 +36,7 @@
       <self_collide>0</self_collide>
     </link>
     <link name='l_finger_1_link_0'>
-      <pose>-0.0455 -0.036 0.0214 1.5616 -1.57 -3.1324</pose>
+      <pose>-0.0455 -0.036 0.0659 1.5616 -1.57 -3.1324</pose>
       <inertial>
         <pose>-0.01 0 0 0 -0 0</pose>
         <mass>0.1</mass>
@@ -113,7 +113,7 @@
       </physics>
     </joint>
     <link name='l_finger_1_link_1'>
-      <pose>-0.0455 -0.036 0.0214 1.57079 0.5206 3.14159</pose>
+      <pose>-0.0455 -0.036 0.0659 1.57079 0.5206 3.14159</pose>
       <inertial>
         <pose>0.00053 0.03218 0 0 -0 1.5708</pose>
         <mass>0.047</mass>
@@ -190,7 +190,7 @@
       </physics>
     </joint>
     <link name='l_finger_1_link_2'>
-      <pose>-0.0739265 -0.0360004 0.0709788 1.57079 0.5206 3.14159</pose>
+      <pose>-0.0739265 -0.0360004 0.115479 1.57079 0.5206 3.14159</pose>
       <inertial>
         <pose>0.00048 0.02167 0.00018 0 -0 1.5708</pose>
         <mass>0.03284</mass>
@@ -267,7 +267,7 @@
       </physics>
     </joint>
     <link name='l_finger_1_link_3'>
-      <pose>-0.0933251 -0.0360006 0.104812 1.5616 -1.57 -3.1324</pose>
+      <pose>-0.0933251 -0.0360006 0.149312 1.5616 -1.57 -3.1324</pose>
       <inertial>
         <pose>0.01626 0.00049 0.0002 0 -0 0</pose>
         <mass>0.03354</mass>
@@ -347,7 +347,7 @@
       </physics>
     </joint>
     <link name='l_finger_1_link_paradistal_hinge'>
-      <pose>-0.0933251 -0.0460006 0.104812 1.57079 0.5206 3.14159</pose>
+      <pose>-0.0933251 -0.0460006 0.149312 1.57079 0.5206 3.14159</pose>
       <inertial>
         <pose>0.00548 0 0 0 -0 0</pose>
         <mass>0.00158</mass>
@@ -420,7 +420,7 @@
       </physics>
     </joint>
     <link name='l_finger_1_link_median_actuating_hinge'>
-      <pose>-0.0739265 -0.0260004 0.0709789 1.57078 0.8906 3.14158</pose>
+      <pose>-0.0739265 -0.0260004 0.115479 1.57078 0.8906 3.14158</pose>
       <inertial>
         <pose>0.0092 0.00514 0 0 -0 0</pose>
         <mass>0.00359</mass>
@@ -493,7 +493,7 @@
       </physics>
     </joint>
     <link name='l_finger_1_link_median_bar'>
-      <pose>-0.095933 -0.0260003 0.0678802 1.57074 -1.4309 -3.14154</pose>
+      <pose>-0.095933 -0.0260003 0.11238 1.57074 -1.4309 -3.14154</pose>
       <inertial>
         <pose>0.01905 -0.00107 0 0 -0 0</pose>
         <mass>0.00538</mass>
@@ -566,7 +566,7 @@
       </physics>
     </joint>
     <link name='l_finger_1_link_paramedian_hinge'>
-      <pose>-0.0739265 -0.0460004 0.0709787 1.57079 0.5206 3.14159</pose>
+      <pose>-0.0739265 -0.0460004 0.115479 1.57079 0.5206 3.14159</pose>
       <inertial>
         <pose>-0.01025 0.00046 0 0 -0 0</pose>
         <mass>0.00276</mass>
@@ -639,7 +639,7 @@
       </physics>
     </joint>
     <link name='l_finger_1_link_median_bar_underactuated'>
-      <pose>-0.0862074 -0.0460003 0.0677298 1.57078 -1.0502 -3.14158</pose>
+      <pose>-0.0862074 -0.0460003 0.11223 1.57078 -1.0502 -3.14158</pose>
       <inertial>
         <pose>0.01905 -0.00107 0 0 -0 0</pose>
         <mass>0.00538</mass>
@@ -712,7 +712,7 @@
       </physics>
     </joint>
     <link name='l_finger_1_link_paraproximal_actuating_hinge'>
-      <pose>-0.0455 -0.046 0.0213999 1.57079 0.5206 3.14159</pose>
+      <pose>-0.0455 -0.046 0.0658999 1.57079 0.5206 3.14159</pose>
       <inertial>
         <pose>0.0064 0 0 0 -0 0</pose>
         <mass>0.00362</mass>
@@ -785,7 +785,7 @@
       </physics>
     </joint>
     <link name='l_finger_1_link_paraproximal_bar'>
-      <pose>-0.0653315 -0.0459999 0.0100293 1.57078 -1.0494 -3.14158</pose>
+      <pose>-0.0653315 -0.0459999 0.0545293 1.57078 -1.0494 -3.14158</pose>
       <inertial>
         <pose>0.02858 -0.00129 0 0 -0 0</pose>
         <mass>0.00732</mass>
@@ -858,7 +858,7 @@
       </physics>
     </joint>
     <link name='l_finger_1_link_proximal_actuating_hinge'>
-      <pose>-0.0455 -0.026 0.0214001 1.57079 0.5206 3.14159</pose>
+      <pose>-0.0455 -0.026 0.0659001 1.57079 0.5206 3.14159</pose>
       <inertial>
         <pose>0.0012 -0.00162 -0.00161 0 -0 0</pose>
         <mass>0.02647</mass>
@@ -931,7 +931,7 @@
       </physics>
     </joint>
     <link name='l_finger_1_link_proximal_actuating_bar'>
-      <pose>-0.0702937 -0.0259999 0.00718436 1.57076 -1.341 -3.14156</pose>
+      <pose>-0.0702937 -0.0259999 0.0516844 1.57076 -1.341 -3.14156</pose>
       <inertial>
         <pose>0.02699 -0.00122 0 0 -0 0</pose>
         <mass>0.00659</mass>
@@ -1004,7 +1004,7 @@
       </physics>
     </joint>
     <link name='l_finger_2_link_0'>
-      <pose>-0.0455 0.036 0.0214 1.5616 -1.57 -3.1324</pose>
+      <pose>-0.0455 0.036 0.0659 1.5616 -1.57 -3.1324</pose>
       <inertial>
         <pose>-0.01 0 0 0 -0 0</pose>
         <mass>0.1</mass>
@@ -1081,7 +1081,7 @@
       </physics>
     </joint>
     <link name='l_finger_2_link_1'>
-      <pose>-0.0455 0.036 0.0214 1.57079 0.5206 3.14159</pose>
+      <pose>-0.0455 0.036 0.0659 1.57079 0.5206 3.14159</pose>
       <inertial>
         <pose>0.00053 0.03218 0 0 -0 1.5708</pose>
         <mass>0.047</mass>
@@ -1158,7 +1158,7 @@
       </physics>
     </joint>
     <link name='l_finger_2_link_2'>
-      <pose>-0.0739265 0.0359996 0.0709788 1.57079 0.5206 3.14159</pose>
+      <pose>-0.0739265 0.0359996 0.115479 1.57079 0.5206 3.14159</pose>
       <inertial>
         <pose>0.00048 0.02167 0.00018 0 -0 1.5708</pose>
         <mass>0.03284</mass>
@@ -1235,7 +1235,7 @@
       </physics>
     </joint>
     <link name='l_finger_2_link_3'>
-      <pose>-0.0933251 0.0359994 0.104812 1.5616 -1.57 -3.1324</pose>
+      <pose>-0.0933251 0.0359994 0.149312 1.5616 -1.57 -3.1324</pose>
       <inertial>
         <pose>0.01626 0.00049 0.0002 0 -0 0</pose>
         <mass>0.03354</mass>
@@ -1315,7 +1315,7 @@
       </physics>
     </joint>
     <link name='l_finger_2_link_paradistal_hinge'>
-      <pose>-0.0933251 0.0259994 0.104812 1.57079 0.5206 3.14159</pose>
+      <pose>-0.0933251 0.0259994 0.149312 1.57079 0.5206 3.14159</pose>
       <inertial>
         <pose>0.00548 0 0 0 -0 0</pose>
         <mass>0.00158</mass>
@@ -1388,7 +1388,7 @@
       </physics>
     </joint>
     <link name='l_finger_2_link_median_actuating_hinge'>
-      <pose>-0.0739265 0.0459996 0.0709789 1.57078 0.8906 3.14158</pose>
+      <pose>-0.0739265 0.0459996 0.115479 1.57078 0.8906 3.14158</pose>
       <inertial>
         <pose>0.0092 0.00514 0 0 -0 0</pose>
         <mass>0.00359</mass>
@@ -1461,7 +1461,7 @@
       </physics>
     </joint>
     <link name='l_finger_2_link_median_bar'>
-      <pose>-0.095933 0.0459997 0.0678802 1.57074 -1.4309 -3.14154</pose>
+      <pose>-0.095933 0.0459997 0.11238 1.57074 -1.4309 -3.14154</pose>
       <inertial>
         <pose>0.01905 -0.00107 0 0 -0 0</pose>
         <mass>0.00538</mass>
@@ -1534,7 +1534,7 @@
       </physics>
     </joint>
     <link name='l_finger_2_link_paramedian_hinge'>
-      <pose>-0.0739265 0.0259996 0.0709787 1.57079 0.5206 3.14159</pose>
+      <pose>-0.0739265 0.0259996 0.115479 1.57079 0.5206 3.14159</pose>
       <inertial>
         <pose>-0.01025 0.00046 0 0 -0 0</pose>
         <mass>0.00276</mass>
@@ -1607,7 +1607,7 @@
       </physics>
     </joint>
     <link name='l_finger_2_link_median_bar_underactuated'>
-      <pose>-0.0862074 0.0259997 0.0677298 1.57078 -1.0502 -3.14158</pose>
+      <pose>-0.0862074 0.0259997 0.11223 1.57078 -1.0502 -3.14158</pose>
       <inertial>
         <pose>0.01905 -0.00107 0 0 -0 0</pose>
         <mass>0.00538</mass>
@@ -1680,7 +1680,7 @@
       </physics>
     </joint>
     <link name='l_finger_2_link_paraproximal_actuating_hinge'>
-      <pose>-0.0455 0.026 0.0213999 1.57079 0.5206 3.14159</pose>
+      <pose>-0.0455 0.026 0.0658999 1.57079 0.5206 3.14159</pose>
       <inertial>
         <pose>0.0064 0 0 0 -0 0</pose>
         <mass>0.00362</mass>
@@ -1753,7 +1753,7 @@
       </physics>
     </joint>
     <link name='l_finger_2_link_paraproximal_bar'>
-      <pose>-0.0653315 0.0260001 0.0100293 1.57078 -1.0494 -3.14158</pose>
+      <pose>-0.0653315 0.0260001 0.0545293 1.57078 -1.0494 -3.14158</pose>
       <inertial>
         <pose>0.02858 -0.00129 0 0 -0 0</pose>
         <mass>0.00732</mass>
@@ -1826,7 +1826,7 @@
       </physics>
     </joint>
     <link name='l_finger_2_link_proximal_actuating_hinge'>
-      <pose>-0.0455 0.046 0.0214001 1.57079 0.5206 3.14159</pose>
+      <pose>-0.0455 0.046 0.0659001 1.57079 0.5206 3.14159</pose>
       <inertial>
         <pose>0.0012 -0.00162 -0.00161 0 -0 0</pose>
         <mass>0.02647</mass>
@@ -1899,7 +1899,7 @@
       </physics>
     </joint>
     <link name='l_finger_2_link_proximal_actuating_bar'>
-      <pose>-0.0702937 0.0460001 0.00718436 1.57076 -1.341 -3.14156</pose>
+      <pose>-0.0702937 0.0460001 0.0516844 1.57076 -1.341 -3.14156</pose>
       <inertial>
         <pose>0.02699 -0.00122 0 0 -0 0</pose>
         <mass>0.00659</mass>
@@ -1972,7 +1972,7 @@
       </physics>
     </joint>
     <link name='l_finger_middle_link_0'>
-      <pose>0.0455 5.73411e-10 0.0214 1.57076 -1.57 3.36481e-05</pose>
+      <pose>0.0455 5.73411e-10 0.0659 1.57076 -1.57 3.36481e-05</pose>
       <inertial>
         <pose>-0.01 0 0 0 -0 0</pose>
         <mass>0.1</mass>
@@ -2049,7 +2049,7 @@
       </physics>
     </joint>
     <link name='l_finger_middle_link_1'>
-      <pose>0.0455 5.73411e-10 0.0214 1.5708 0.5206 -1.53631e-08</pose>
+      <pose>0.0455 5.73411e-10 0.0659 1.5708 0.5206 -1.53631e-08</pose>
       <inertial>
         <pose>0.00053 0.03218 0 0 -0 1.5708</pose>
         <mass>0.047</mass>
@@ -2126,7 +2126,7 @@
       </physics>
     </joint>
     <link name='l_finger_middle_link_2'>
-      <pose>0.0739265 1.90187e-09 0.0709788 1.5708 0.5206 -1.53631e-08</pose>
+      <pose>0.0739265 1.90187e-09 0.115479 1.5708 0.5206 -1.53631e-08</pose>
       <inertial>
         <pose>0.00048 0.02167 0.00018 0 -0 1.5708</pose>
         <mass>0.03284</mass>
@@ -2203,7 +2203,7 @@
       </physics>
     </joint>
     <link name='l_finger_middle_link_3'>
-      <pose>0.0933251 2.80843e-09 0.104812 1.57076 -1.57 3.36481e-05</pose>
+      <pose>0.0933251 2.80843e-09 0.149312 1.57076 -1.57 3.36481e-05</pose>
       <inertial>
         <pose>0.01626 0.00049 0.0002 0 -0 0</pose>
         <mass>0.03354</mass>
@@ -2283,7 +2283,7 @@
       </physics>
     </joint>
     <link name='l_finger_middle_link_paradistal_hinge'>
-      <pose>0.0933251 0.01 0.104812 1.5708 0.5206 -1.53631e-08</pose>
+      <pose>0.0933251 0.01 0.149312 1.5708 0.5206 -1.53631e-08</pose>
       <inertial>
         <pose>0.00548 0 0 0 -0 0</pose>
         <mass>0.00158</mass>
@@ -2356,7 +2356,7 @@
       </physics>
     </joint>
     <link name='l_finger_middle_link_median_actuating_hinge'>
-      <pose>0.0739265 -0.01 0.0709788 1.5708 0.8906 -3.31216e-08</pose>
+      <pose>0.0739265 -0.01 0.115479 1.5708 0.8906 -3.31216e-08</pose>
       <inertial>
         <pose>0.0092 0.00514 0 0 -0 0</pose>
         <mass>0.00359</mass>
@@ -2429,7 +2429,7 @@
       </physics>
     </joint>
     <link name='l_finger_middle_link_median_bar'>
-      <pose>0.095933 -0.01 0.0678801 1.5708 -1.4309 1.90283e-07</pose>
+      <pose>0.095933 -0.01 0.11238 1.5708 -1.4309 1.90283e-07</pose>
       <inertial>
         <pose>0.01905 -0.00107 0 0 -0 0</pose>
         <mass>0.00538</mass>
@@ -2502,7 +2502,7 @@
       </physics>
     </joint>
     <link name='l_finger_middle_link_paramedian_hinge'>
-      <pose>0.0739265 0.01 0.0709788 1.5708 0.5206 -1.53631e-08</pose>
+      <pose>0.0739265 0.01 0.115479 1.5708 0.5206 -1.53631e-08</pose>
       <inertial>
         <pose>-0.01025 0.00046 0 0 -0 0</pose>
         <mass>0.00276</mass>
@@ -2575,7 +2575,7 @@
       </physics>
     </joint>
     <link name='l_finger_middle_link_median_bar_underactuated'>
-      <pose>0.0862074 0.01 0.0677299 1.5708 -1.0502 4.67336e-08</pose>
+      <pose>0.0862074 0.01 0.11223 1.5708 -1.0502 4.67336e-08</pose>
       <inertial>
         <pose>0.01905 -0.00107 0 0 -0 0</pose>
         <mass>0.00538</mass>
@@ -2648,7 +2648,7 @@
       </physics>
     </joint>
     <link name='l_finger_middle_link_paraproximal_actuating_hinge'>
-      <pose>0.0455 0.01 0.0214 1.5708 0.5206 -1.53631e-08</pose>
+      <pose>0.0455 0.01 0.0659 1.5708 0.5206 -1.53631e-08</pose>
       <inertial>
         <pose>0.0064 0 0 0 -0 0</pose>
         <mass>0.00362</mass>
@@ -2721,7 +2721,7 @@
       </physics>
     </joint>
     <link name='l_finger_middle_link_paraproximal_bar'>
-      <pose>0.0653315 0.01 0.0100294 1.5708 -1.0494 4.66471e-08</pose>
+      <pose>0.0653315 0.01 0.0545294 1.5708 -1.0494 4.66471e-08</pose>
       <inertial>
         <pose>0.02858 -0.00129 0 0 -0 0</pose>
         <mass>0.00732</mass>
@@ -2794,7 +2794,7 @@
       </physics>
     </joint>
     <link name='l_finger_middle_link_proximal_actuating_hinge'>
-      <pose>0.0455 -0.01 0.0214 1.5708 0.5206 -1.53631e-08</pose>
+      <pose>0.0455 -0.01 0.0659 1.5708 0.5206 -1.53631e-08</pose>
       <inertial>
         <pose>0.0012 -0.00162 -0.00161 0 -0 0</pose>
         <mass>0.02647</mass>
@@ -2867,7 +2867,7 @@
       </physics>
     </joint>
     <link name='l_finger_middle_link_proximal_actuating_bar'>
-      <pose>0.0702937 -0.01 0.00718429 1.5708 -1.341 1.14543e-07</pose>
+      <pose>0.0702937 -0.01 0.0516843 1.5708 -1.341 1.14543e-07</pose>
       <inertial>
         <pose>0.02699 -0.00122 0 0 -0 0</pose>
         <mass>0.00659</mass>

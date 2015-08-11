@@ -3954,7 +3954,7 @@
     <static>0</static>
     <plugin name='robotiq_controller' filename='libRobotiqHandPlugin.so'>
       <side>left</side>
-      <kp_position>8</kp_position>
+      <kp_position>15</kp_position>
       <robotName>full_lwr</robotName>
     </plugin>
   </model>

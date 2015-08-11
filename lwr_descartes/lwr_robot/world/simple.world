@@ -16,7 +16,9 @@
         </include>
         <include>
             <uri>model://lwr_robot/models/full_lwr</uri>
+            <pose>0 0 0 0 0 0</pose>
         </include>
+
         <include>
             <uri>model://washer</uri>
             <name>washer_0</name>

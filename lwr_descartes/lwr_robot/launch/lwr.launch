@@ -5,18 +5,8 @@
     <!-- in case you have different robot configurations -->
     <arg name="robot_name" default="full_lwr"/>
 
-    <!-- the default is the simulator -->
-    <arg name="use_lwr_sim" default="true"/>
-
     <!-- controllers to load, check the lwr_controllers package for other options-->
-    <!-- NOTE: kuka_lwr packages are being modified right now and multiple controllers are not supported at this moment -->
     <arg name="controllers" default="joint_trajectory_controller"/>
-
-    <!-- set the parameters for the real interface -->
-    <arg name="lwr_powered" default="false"/>
-    <arg name="port" default="49939"/>
-    <arg name="ip" default="192.168.0.20"/>
-    <arg name="t1_limits" default="false"/>
 
     <!-- in case you want to load moveit from here, it might be hard with the real HW though -->
     <arg name="load_moveit" default="false"/>
@@ -26,81 +16,64 @@
     <arg name="gui" default="false" />
     <arg name="use_joint_state_publisher" default="true"/>
 
+
     <!-- LAUNCH_IMPLEMENTATION -->
+    
+    <!--launch gazebo-->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find lwr_robot)/world/simple.world"/> 
+        <arg name="paused" value="true"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="extra_gazebo_args" value=""/>
+        <arg name="gui" value="true"/>
+        <arg name="headless" value="false"/>
+        <arg name="debug" value="true"/>
+        <arg name="physics" value="ode"/>
+        <arg name="verbose" value="true"/>
+    </include>
 
-     <!-- load urdf to param server -->
+    <!-- the yaml file already specifies its in the lwr ns, maybe worth changing?-->
+    <rosparam file="$(find lwr_robot)/config/controllers.yaml" command="load"/>
     <param name="robot_description" command="$(find xacro)/xacro.py $(find lwr_robot)/models/$(arg robot_name)/$(arg robot_name).urdf.xacro"/>
+    <rosparam command="load" file="$(find lwr_robot)/config/joint_names.yaml"/>
 
-    <!-- joint and robot state publishers of the full robot description -->
-    <param name="use_gui" value="$(arg gui)"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
     <group if="$(arg use_joint_state_publisher)">
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
             <rosparam param="source_list">[/lwr/joint_states]</rosparam>
         </node>
     </group>
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
 
-	<group if="$(arg use_lwr_sim)">
-        <!--launch gazebo-->
-        <include file="$(find gazebo_ros)/launch/empty_world.launch">
-            <arg name="world_name" value="$(find lwr_robot)/world/simple.world"/> 
-            <arg name="paused" value="true"/>
-            <arg name="use_sim_time" value="true"/>
-            <arg name="extra_gazebo_args" value=""/>
-            <arg name="gui" value="true"/>
-            <arg name="headless" value="false"/>
-            <arg name="debug" value="false"/>
-            <arg name="physics" value="ode"/>
-            <arg name="verbose" value="true"/>
-        </include>
-    
-        <!-- NOTE: currently, this is done by spawning the sdf model using the
-        world file. If you want to use the urdf directly, remove the model from 
-        simple.world and uncomment the next line: -->
-        <!--<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model $(arg robot_name)"  respawn="false" output="screen" />-->
-    </group>
-
-	<!-- load moveit configuration -->
     <group if="$(arg load_moveit)">
-        <rosparam command="load" file="$(find lwr_moveit)/config/joint_names.yaml"/>
         <include file="$(find lwr_moveit)/launch/move_group.launch">
             <arg name="allow_trajectory_execution" value="true"/>  
             <arg name="fake_execution" value="false"/>
             <arg name="info" value="true"/>
             <arg name="debug" value="false"/>
         </include>
-
-		<!-- run Rviz and load the default config to see the state of the move_group node -->
-		<include file="$(find lwr_moveit)/launch/moveit_rviz.launch">
-			<arg name="config" value="true"/>
-			<arg name="debug" value="false"/>
-		</include>
+    
+	 <!-- run Rviz and load the default config to see the state of the move_group node -->
+	    <include file="$(find lwr_moveit)/launch/moveit_rviz.launch">
+	 	    <arg name="config" value="true"/>
+	 	    <arg name="debug" value="false"/>
+	    </include>
     </group>
-
-    <!-- Load updated joint limits (override information from single_lwr_moveit) to respect T1 mode limits -->
-    <group if="$(arg t1_limits)" ns="robot_description_planning">
-        <rosparam command="load" file="$(find lwr_robot)/config/t1_joint_limits.yaml"/>
-    </group>
-
-	<!-- load robotHW configurations to rosparam server -->
-	<!--<rosparam command="load" file="$(find lwr_robot)/config/hw_interface.yaml"/>-->
-
-    <!-- load all controller configurations to rosparam server-->
-    <rosparam file="$(find lwr_robot)/config/controllers.yaml" command="load"/>
     <group ns="lwr">
-		<group if="$(arg lwr_powered)">
-			<!--add a copy of the robot description within the name space -->
-			<param name="robot_description" command="$(find xacro)/xacro.py $(find lwr_robot)/models/$(arg robot_name)/$(arg robot_name).urdf.xacro"/>
 
-			<include file="$(find lwr_hw)/launch/lwr_hw.launch">
-				<arg name="port" value="$(arg port)"/>
-				<arg name="ip" value="$(arg ip)"/>
-				<arg name="file_with_path" value="$(arg file)"/>
-				<!-- this name MUST match the name you give to the arm in the URDF instance -->
-				<!-- to minimize errors, you could pass it as a xacro parameter -->
-				<arg name="name" value="lwr"/>
-			</include>
-		</group>
+        <!-- load urdf to param server -->
+        <param name="robot_description" command="$(find xacro)/xacro.py $(find lwr_robot)/models/$(arg robot_name)/$(arg robot_name).urdf.xacro"/>
+
+        <!-- joint and robot state publishers of the full robot description -->
+        <param name="use_gui" value="$(arg gui)"/>
+
+
+        <!-- NOTE: currently, this is done by spawning the sdf model using the
+        world file. If you want to use the urdf directly, remove the model from 
+        simple.world and uncomment the next line: -->
+        <!--<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model $(arg robot_name)"  respawn="false" output="screen" />-->
+	    <!-- load moveit configuration -->
+
 
         <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="joint_state_controller $(arg controllers)"/>
 

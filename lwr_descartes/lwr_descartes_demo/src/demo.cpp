@@ -19,10 +19,6 @@
 
 //subscriber msgs
 #include <std_msgs/String.h>
-//gazebo msgs
-/*#include <gazebo/transport/transport.hh>
-#include <gazebo/msgs/msgs.hh>
-#include <gazebo/gazebo.hh>*/
 #include <gazebo_msgs/ModelStates.h>
 
 #include <stdio.h>		// stdin, stderr 
@@ -32,8 +28,6 @@
 #include <math.h>
 #include <unistd.h>     //usleep
 #include <iostream>      //cout
-
-/*#include <ulapi.h>*/
 
 typedef std::vector<descartes_core::TrajectoryPtPtr> TrajectoryVec;
 typedef TrajectoryVec::const_iterator TrajectoryIter;
@@ -106,8 +100,6 @@ bool executeTrajectory(const trajectory_msgs::JointTrajectory& trajectory)
   }
 }
 
-
-
 class Pose_Listener
 {
     public:
@@ -136,11 +128,8 @@ void Pose_Listener::callback(const gazebo_msgs::ModelStatesConstPtr& msg)
     }
     for (int i = 0; !(msg->name[i].empty()) ;  i++)
     {
-//        puts("this is happening");
-//        std::cout << this->target << std::endl;
         if (msg->name[i].compare(this->target) == 0)
         {
-//            puts("the other thing is happening");
             this->t_x = msg->pose[i].position.x;
             this->t_y = msg->pose[i].position.y;
             this->t_z = msg->pose[i].position.z;
@@ -150,21 +139,10 @@ void Pose_Listener::callback(const gazebo_msgs::ModelStatesConstPtr& msg)
     return;
 }
 
-class Grip_Listener
-{
-    public:
-        char status;
-        void callback(const robotiq_s_model_articulated_msgs::SModelRobotInputConstPtr& msg);
-};
-void Grip_Listener::callback(const robotiq_s_model_articulated_msgs::SModelRobotInputConstPtr& msg)
-{
-    this->status = msg->gSTA;
-}
-
 int main (int argc, char **argv)
 {
-    const float Z_COR = 0.245, Y_COR = 0, X_COR = 0.00, STANDBY_HEIGHT = 0.7;
-    const char GRIP_POS = 205;
+    const float Z_COR = .245, Y_COR = 0, X_COR = 0.00, STANDBY_HEIGHT = 0.7;
+    const char GRIP_POS = 199;
 
     ros::init(argc, argv, "demo");
     ros::NodeHandle nh; 
@@ -175,7 +153,7 @@ int main (int argc, char **argv)
     /* Gazebo object positions */
     Pose_Listener gz_listen;
     gz_listen.name.assign("metal_peg");
-    gz_listen.target.assign("washer_0");
+    gz_listen.target.assign("washer_1");
     ros::Subscriber gz_sub = nh.subscribe<gazebo_msgs::ModelStates>("gazebo/model_states", 1, &Pose_Listener::callback, &gz_listen);
 
     /* Gripper commands*/
@@ -193,21 +171,12 @@ int main (int argc, char **argv)
         loop_rate.sleep();
     }
 
-    /* Gripper state */
-    Grip_Listener grip_listen;
-    ros::Subscriber grip_sub = nh.subscribe<robotiq_s_model_articulated_msgs::SModelRobotInput>("left_hand/state", 1, &Grip_Listener::callback, &grip_listen);
-
-
     /* Descartes Model Initialization */
     
-    // Name of description on parameter server. Typically just "robot_description".
-    const std::string robot_description = "robot_description";
-    // name of the kinematic group you defined when running MoveitSetupAssistant
-    const std::string group_name = "full_lwr";
-    // Name of frame in which you are expressing poses. Typically "world_frame" or "base_link".
-    const std::string world_frame = "world";
-    // tool center point frame (name of link associated with tool)
-    const std::string tcp_frame = "lwr_7_link";
+    const std::string robot_description = argv[1];
+    const std::string group_name = argv[2];
+    const std::string world_frame = argv[3];
+    const std::string tcp_frame = argv[4];
 
     descartes_core::RobotModelPtr model (new descartes_moveit::MoveitStateAdapter);
     if (!model->initialize(robot_description, group_name, world_frame, tcp_frame))
@@ -215,259 +184,126 @@ int main (int argc, char **argv)
         ROS_INFO("Could not initialize robot model");
         exit(-1);
     }
-    else
-    {
-        model->setCheckCollisions(false);
-        ROS_INFO("Robot initialized successfully!");
-    }
-    // 3. Create a planner and initialize it with our robot model
+    model->setCheckCollisions(true);
+    ROS_INFO("Robot initialized successfully!");
+
     descartes_planner::DensePlanner planner;
     planner.initialize(model);
 
+    // Get Joint Names
+    std::vector<std::string> j_names;
+    nh.getParam("controller_joint_names", j_names);
 
     TrajectoryVec points;
     TrajectoryVec result;
     std::vector<double> joints;
     std::vector<double> times;
+    enum Task { PICK = 0, PLACE = 1, RESET = 2 };
+    int t = PICK;
+    while(true)
+    {
+        using namespace descartes_core;
+        using namespace descartes_trajectory;
 
-    // Get Joint Names
-    std::vector<std::string> j_names;
-    nh.getParam("controller_joint_names", j_names);
-    while (true){
+        model->updateScene();
+
+        //add dummy point if this is the start of execution
+        if (points.empty())
         {
-            if ( gz_listen.target.compare("washer_0") == 0 ) {
-                gz_listen.target.assign("washer_1");
-            } else {
-                ROS_WARN ("its not washer_0");
-                gz_listen.target.assign("washer_0");
-            }
-            ROS_WARN("before: %f\n",gz_listen.t_x);
-            usleep(1000*1000);
-            ROS_WARN("after: %f\n",gz_listen.t_x);
+            TrajectoryPtPtr dummy_pt;
+            for (int q = 0; q < 7; q++) joints.push_back(0);
+            dummy_pt = TrajectoryPtPtr( new JointTrajectoryPt(joints) );
+            points.push_back(dummy_pt);
+        }
 
-
-            using namespace descartes_core;
-            using namespace descartes_trajectory;
-            //poses
-            /*TrajectoryPtPtr ps_pt;
-            Eigen::Affine3d pose = Eigen::Translation3d(gz_listen.x, gz_listen.y, 0.8) *
-            Eigen::Affine3d(Eigen::AngleAxisd(M_PI, Eigen::Vector3d(1, 0, 0))) *
-            Eigen::Affine3d(Eigen::AngleAxisd(0, Eigen::Vector3d(0, 1, 0))) *
-            Eigen::Affine3d(Eigen::AngleAxisd(0, Eigen::Vector3d(0, 0, 1)));
-            ps_pt = TrajectoryPtPtr( new CartTrajectoryPt( TolerancedFrame(pose) ) );
-
-            TrajectoryPtPtr pr_pt;
-            pose = Eigen::Translation3d(gz_listen.x + X_COR, gz_listen.y + Y_COR, gz_listen.z + Z_COR) *
-            Eigen::Affine3d(Eigen::AngleAxisd(M_PI, Eigen::Vector3d(1, 0, 0))) *
-            Eigen::Affine3d(Eigen::AngleAxisd(0, Eigen::Vector3d(0, 1, 0))) *
-            Eigen::Affine3d(Eigen::AngleAxisd(0, Eigen::Vector3d(0, 0, 1)));
-            pr_pt = TrajectoryPtPtr( new CartTrajectoryPt( TolerancedFrame(pose) ) );
-
-            TrajectoryPtPtr ts_pt;
-            pose = Eigen::Translation3d(gz_listen.t_x, gz_listen.t_y, 0.8) *
-            Eigen::Affine3d(Eigen::AngleAxisd(M_PI, Eigen::Vector3d(1, 0, 0))) *
-            Eigen::Affine3d(Eigen::AngleAxisd(0, Eigen::Vector3d(0, 1, 0))) *
-            Eigen::Affine3d(Eigen::AngleAxisd(0, Eigen::Vector3d(0, 0, 1)));
-            ts_pt = TrajectoryPtPtr( new CartTrajectoryPt( TolerancedFrame(pose) ) );
-
-            TrajectoryPtPtr tr_pt;
-            pose = Eigen::Translation3d(gz_listen.t_x, gz_listen.t_y, gz_listen.t_z + Z_COR) *
-            Eigen::Affine3d(Eigen::AngleAxisd(M_PI, Eigen::Vector3d(1, 0, 0))) *
-            Eigen::Affine3d(Eigen::AngleAxisd(0, Eigen::Vector3d(0, 1, 0))) *
-            Eigen::Affine3d(Eigen::AngleAxisd(0, Eigen::Vector3d(0, 0, 1)));
-            tr_pt = TrajectoryPtPtr( new CartTrajectoryPt( TolerancedFrame(pose) ) );*/
-
-            //pickup standby pos
-            TrajectoryPtPtr ps_pt;
-            ps_pt = TrajectoryPtPtr( new AxialSymmetricPt(gz_listen.x, gz_listen.y, STANDBY_HEIGHT, M_PI, 0, 0, M_PI/2.0, AxialSymmetricPt::Z_AXIS) );
-            //pickup ready pos
-            TrajectoryPtPtr pr_pt;
-            pr_pt = TrajectoryPtPtr( new AxialSymmetricPt(gz_listen.x + X_COR, gz_listen.y + Y_COR, gz_listen.z + Z_COR, M_PI, 0, 0, M_PI/2.0, AxialSymmetricPt::Z_AXIS) );
-            //target standby pos
-            TrajectoryPtPtr ts_pt;
-            ts_pt = TrajectoryPtPtr( new AxialSymmetricPt(gz_listen.t_x, gz_listen.t_y, STANDBY_HEIGHT, M_PI, 0, 0, M_PI/2.0, AxialSymmetricPt::Z_AXIS) );
-            //target ready pos
-            TrajectoryPtPtr tr_pt;
-            tr_pt = TrajectoryPtPtr( new AxialSymmetricPt(gz_listen.t_x + X_COR, gz_listen.t_y + Y_COR, gz_listen.t_z + Z_COR, M_PI, 0, 0, M_PI/2.0, AxialSymmetricPt::Z_AXIS) );
-
-            //add dummy point if this is the start of execution
-            if (points.empty())
-            {
-                TrajectoryPtPtr dummy_pt;
-                for (int q = 0; q < 7; q++) joints.push_back(0);
-                dummy_pt = TrajectoryPtPtr( new JointTrajectoryPt(joints) );
-                points.push_back(dummy_pt);
-            }
-
-            points.push_back(ps_pt);
-            points.push_back(pr_pt);
-            times.push_back(4);
-            times.push_back(5);
-            //execute 
-            // 4. Feed the trajectory to the planner
-            if (!planner.planPath(points))
-            {
-                ROS_ERROR("Could not solve for a valid path");
-                points.clear();
-                times.clear();
+        //pickup standby pos
+        TrajectoryPtPtr ps_pt = TrajectoryPtPtr( new AxialSymmetricPt(gz_listen.x, gz_listen.y, STANDBY_HEIGHT, M_PI, 0, 0, .6/*M_PI/2.0*/, AxialSymmetricPt::Z_AXIS) );
+        //pickup ready pos
+        TrajectoryPtPtr pr_pt = TrajectoryPtPtr( new AxialSymmetricPt(gz_listen.x + X_COR, gz_listen.y + Y_COR, gz_listen.z + Z_COR, M_PI, 0, 0, .6/*M_PI/2.0*/, AxialSymmetricPt::Z_AXIS) );
+        //place standby pos
+        TrajectoryPtPtr ts_pt = TrajectoryPtPtr( new AxialSymmetricPt(gz_listen.t_x, gz_listen.t_y, STANDBY_HEIGHT, M_PI, 0, 0, .6/*M_PI/2.0*/, AxialSymmetricPt::Z_AXIS) );
+        //place ready pos
+        TrajectoryPtPtr tr_pt = TrajectoryPtPtr( new AxialSymmetricPt(gz_listen.t_x + X_COR, gz_listen.t_y + Y_COR, gz_listen.t_z + Z_COR, M_PI, 0, 0, .6/*M_PI/2.0*/, AxialSymmetricPt::Z_AXIS) );
+        
+        switch(t)
+        {
+            case PICK:
+                points.push_back(ps_pt);
+                points.push_back(pr_pt);
+                times.push_back(4);
+                times.push_back(5);
                 break;
-            }
-            if (!planner.getPath(result))
-            {
-                ROS_ERROR("Could not retrieve path");
-                points.clear();
-                times.clear();
+            case PLACE:
+                points.push_back(ps_pt);
+                points.push_back(ts_pt);
+                points.push_back(tr_pt);
+                times.push_back(5);
+                times.push_back(8);
+                times.push_back(5);
                 break;
-            }
-            // 5. Translate the result into a type that ROS understands
-            trajectory_msgs::JointTrajectory joint_solution = toROSJointTrajectory(result, *model, j_names, times);
-            // 6. Send the ROS trajectory to the robot for execution
-            if (!executeTrajectory(joint_solution))
-            {
-                ROS_ERROR("Could not execute trajectory!");
-                points.clear();
-                times.clear();
+            case RESET:
+                points.push_back(ts_pt);
+                times.push_back(5);
                 break;
-            }
-            else 
-            {
-                //set point vector to only contain the last point in the trajectory
-                points.clear();
-                times.clear();
-                points.push_back( result.back() );
-                result.clear();
-            }
+        } //switch(t)
 
-            //grasp gripper
-            command.rPRA = GRIP_POS;
-            for (int m = 0; m < 10; m++)
-            {
-                robotiq_control.publish(command);
-                loop_rate.sleep();
-            }
-            usleep(100000); //sleep for 100ms to skip garbage values
-            /*while(grip_listen.status == 0);
-            //switch targets
-            if (grip_listen.status == 2 || grip_listen.status == 1) {
-                if ( gz_listen.target.compare("washer_0") ) {
-                    gz_listen.target.assign("washer_1");
-                } else {
-                    gz_listen.target.assign("washer_0");
+        //execute 
+        // 4. Feed the trajectory to the planner
+        if (!planner.planPath(points))
+        {
+            ROS_ERROR("Could not solve for a valid path");
+            break;
+        }
+        if (!planner.getPath(result))
+        {
+            ROS_ERROR("Could not retrieve path");
+            break;
+        }
+        // 5. Translate the result into a type that ROS understands
+        trajectory_msgs::JointTrajectory joint_solution = toROSJointTrajectory(result, *model, j_names, times);
+        // 6. Send the ROS trajectory to the robot for execution
+        if (!executeTrajectory(joint_solution))
+        {
+            ROS_ERROR("Could not execute trajectory!");
+            break;
+        }
+
+        //set point vector to only contain the last point in the trajectory
+        points.clear();
+        times.clear();
+        points.push_back( result.back() );
+        result.clear();
+
+        switch(t)
+        {
+            case (PICK):
+                //close gripper
+                command.rPRA = GRIP_POS;
+                for (int m = 0; m < 10; m++)
+                {
+                    robotiq_control.publish(command);
+                    loop_rate.sleep();
                 }
-            } else {
-                //release gripper
+                break;
+            case (PLACE):
+                //open gripper
                 command.rPRA = 0;
                 for (int m = 0; m < 10; m++)
                 {
                     robotiq_control.publish(command);
                     loop_rate.sleep();
                 }
-            }*/
-
-            points.push_back(ps_pt);
-            points.push_back(ts_pt);
-            points.push_back(tr_pt);
-            times.push_back(5);
-            times.push_back(8);
-            times.push_back(5);
-            //execute
-            // 4. Feed the trajectory to the planner
-            if (!planner.planPath(points))
-            {
-                ROS_ERROR("Could not solve for a valid path");
-                points.clear();
-                times.clear();
                 break;
-            }
-            if (!planner.getPath(result))
-            {
-                ROS_ERROR("Could not retrieve path");
-                points.clear();
-                times.clear();
-                break;
-            }
-            // 5. Translate the result into a type that ROS understands
-            joint_solution = toROSJointTrajectory(result, *model, j_names, times);
-            // 6. Send the ROS trajectory to the robot for execution
-            if (!executeTrajectory(joint_solution))
-            {
-                ROS_ERROR("Could not execute trajectory!");
-                points.clear();
-                times.clear();
-                break;
-            }
-            else 
-            {
-                //set point vector to only contain the last point in the trajectory
-                points.clear();
-                times.clear();
-                points.push_back( result.back() );
-                result.clear();
-            }
-
-            //precise placement
-            /* options:
-            1. small change, make sure its closer, repeat, still need to calc quaternion to angle
-            2. add virtual link at grasp point, get position of link relative to world frame, put link in position of (hole + dist. from grip to object). get angle of peg and rotate cart gripper point to compensate. Convert from quaternion once.
-
-            2 is better.
-            */
-
-            //open gripper
-            command.rPRA = 0;
-            for (int m = 0; m < 10; m++)
-            {
-                robotiq_control.publish(command);
-                loop_rate.sleep();
-            }
-
-            points.push_back(ts_pt);
-            times.push_back(5);
-            //execute
-            // 4. Feed the trajectory to the planner
-            if (!planner.planPath(points))
-            {
-                ROS_ERROR("Could not solve for a valid path");
-                points.clear();
-                times.clear();
-                break;
-            }
-            if (!planner.getPath(result))
-            {
-                ROS_ERROR("Could not retrieve path");
-                points.clear();
-                times.clear();
-                break;
-            }
-            // 5. Translate the result into a type that ROS understands
-            joint_solution = toROSJointTrajectory(result, *model, j_names, times);
-            // 6. Send the ROS trajectory to the robot for execution
-            if (!executeTrajectory(joint_solution))
-            {
-                ROS_ERROR("Could not execute trajectory!");
-                points.clear();
-                times.clear();
-                break;
-            }
-            else 
-            {
-                //set point vector to only contain the last point in the trajectory
-                points.clear();
-                times.clear();
-                points.push_back( result.back() );
-                result.clear();
-            }
-            ROS_WARN("GOT_HERE");
-        }
-        //printf("I say: %f\n", gz_listen.x);
-        //printf("I say: %0X\n", grip_listen.status);
-
-    }
+       
+            case (RESET):
+                //switch targets
+                if ( gz_listen.target.compare("washer_0") == 0 ) {
+                    gz_listen.target.assign("washer_1");
+                } else {
+                    gz_listen.target.assign("washer_0");
+                }
+                usleep(1000*1000);
+        } //switch(t)
+        t = (++t) % 3;
+    } //while(true)
 }
-
-
-
-
-
-
-

@@ -1,6 +1,6 @@
 <sdf version='1.5'>
   <model name='lwr_robot'>
-    <link name='base'>
+    <link name='lwr_base_link'>
       <pose>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>0 0 0.055 0 -0 0</pose>
@@ -14,7 +14,7 @@
           <izz>0.00381667</izz>
         </inertia>
       </inertial>
-      <collision name='base_collision'>
+      <collision name='lwr_base_link_collision'>
         <pose>0 0 0.055 0 -0 -3.14159</pose>
         <geometry>
           <cylinder>
@@ -22,8 +22,16 @@
             <radius>0.07</radius>
           </cylinder>
         </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
       </collision>
-      <visual name='base_visual'>
+      <visual name='lwr_base_link_visual'>
         <pose>0 0 0 0 -0 -3.14159</pose>
         <geometry>
           <mesh>
@@ -31,12 +39,36 @@
             <uri>model://lwr_description/meshes/base.STL</uri>
           </mesh>
         </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Orange</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
       </visual>
       <gravity>1</gravity>
       <velocity_decay/>
       <self_collide>0</self_collide>
       <gravity>1</gravity>
     </link>
+    <joint name='world_lwr_base_joint' type='revolute'>
+      <child>lwr_base_link</child>
+      <parent>world</parent>
+      <axis>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
     <link name='lwr_1_link'>
       <pose>0 0 0.11 0 -0 0</pose>
       <inertial>
@@ -122,7 +154,7 @@
     </link>
     <joint name='lwr_0_joint' type='revolute'>
       <child>lwr_1_link</child>
-      <parent>base</parent>
+      <parent>lwr_base_link</parent>
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
@@ -694,10 +726,10 @@
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
-    <static>0</static>
     <plugin name='lwr_hw' filename='liblwr_hw_sim_plugin.so'>
       <robotNamespace>lwr</robotNamespace>
       <robotSimType>lwr_hw/DefaultLWRHWsim</robotSimType>
     </plugin>
+    <static>0</static>
   </model>
 </sdf>

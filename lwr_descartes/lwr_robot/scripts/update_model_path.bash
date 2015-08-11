@@ -5,6 +5,7 @@ declare -a packages=( \
 'lwr_description' \
 'lwr_robot' \
 'robotiq_s_model_visualization' \
+'soft_hand_description' \
 )
 model_path="$GAZEBO_MODEL_PATH"
 for package in "${packages[@]}"; do

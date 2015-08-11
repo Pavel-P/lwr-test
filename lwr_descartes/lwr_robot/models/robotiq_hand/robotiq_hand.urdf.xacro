@@ -5,7 +5,7 @@
 
     <link name="EE_LINK"/>
     <xacro:robotiq_hand prefix="l_" reflect="-1" parent="EE_LINK"> 
-        <origin xyz="0 0 0" rpy="${3.1415926/2} 0 0"/>
+        <origin xyz="0 0 0.0445" rpy="${3.1415926/2} 0 0"/>
     </xacro:robotiq_hand>
 
 </robot>
