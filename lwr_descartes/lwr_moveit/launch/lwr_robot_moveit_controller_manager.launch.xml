@@ -5,6 +5,6 @@
 
 	<param name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
 
-	<rosparam file="$(find 2_lwr_moveit)/config/controllers.yaml"/>
+	<rosparam file="$(find lwr_moveit)/config/controllers.yaml"/>
 
 </launch>

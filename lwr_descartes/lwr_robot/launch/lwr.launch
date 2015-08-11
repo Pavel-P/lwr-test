@@ -46,7 +46,7 @@
     </group>
 
     <group if="$(arg load_moveit)">
-        <include file="$(find 2_lwr_moveit)/launch/move_group.launch">
+        <include file="$(find lwr_moveit)/launch/move_group.launch">
             <arg name="allow_trajectory_execution" value="true"/>  
             <arg name="fake_execution" value="false"/>
             <arg name="info" value="true"/>
@@ -54,7 +54,7 @@
         </include>
     
 	 <!-- run Rviz and load the default config to see the state of the move_group node -->
-	    <include file="$(find 2_lwr_moveit)/launch/moveit_rviz.launch">
+	    <include file="$(find lwr_moveit)/launch/moveit_rviz.launch">
 	 	    <arg name="config" value="true"/>
 	 	    <arg name="debug" value="false"/>
 	    </include>

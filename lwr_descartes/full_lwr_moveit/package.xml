@@ -1,6 +1,6 @@
 <package>
 
-  <name>lwr_moveit</name>
+  <name>full_lwr_moveit</name>
   <version>0.2.0</version>
   <description>
      An automatically generated package with all the configuration and launch files for using the full_lwr with the MoveIt Motion Planning Framework
