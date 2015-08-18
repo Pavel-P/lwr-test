@@ -12,6 +12,7 @@
 #include <descartes_trajectory/cart_trajectory_pt.h>
 // Includes the planner we will be using
 #include <descartes_planner/dense_planner.h>
+#include <descartes_planner/sparse_planner.h>
 
 //message types for gripper
 #include <robotiq_s_model_articulated_msgs/SModelRobotInput.h>
@@ -187,7 +188,8 @@ int main (int argc, char **argv)
     model->setCheckCollisions(true);
     ROS_INFO("Robot initialized successfully!");
 
-    descartes_planner::DensePlanner planner;
+    //descartes_planner::DensePlanner planner;
+    descartes_planner::SparsePlanner planner;
     planner.initialize(model);
 
     // Get Joint Names
@@ -196,10 +198,13 @@ int main (int argc, char **argv)
 
     TrajectoryVec points;
     TrajectoryVec result;
-    std::vector<double> joints;
     std::vector<double> times;
+
+    std::vector<double> joints;
+    for (int q = 0; q < 7; q++) joints.push_back(0);
+
     enum Task { PICK = 0, PLACE = 1, RESET = 2 };
-    int t = PICK;
+    int task = PICK;
     while(true)
     {
         using namespace descartes_core;
@@ -207,45 +212,45 @@ int main (int argc, char **argv)
 
         model->updateScene();
 
+        //dummy point
+        TrajectoryPtPtr dummy_pt = TrajectoryPtPtr(new JointTrajectoryPt(joints));
+        //pickup standby pos
+        TrajectoryPtPtr ps_pt = TrajectoryPtPtr(new AxialSymmetricPt(gz_listen.x, gz_listen.y, STANDBY_HEIGHT, M_PI, 0, 0, M_PI/2.0, AxialSymmetricPt::Z_AXIS, TimingConstraint(5)));
+        //pickup ready pos
+        TrajectoryPtPtr pr_pt = TrajectoryPtPtr(new AxialSymmetricPt(gz_listen.x + X_COR, gz_listen.y + Y_COR, gz_listen.z + Z_COR, M_PI, 0, 0, M_PI/2.0, AxialSymmetricPt::Z_AXIS, TimingConstraint(5)));
+        //place standby pos
+        TrajectoryPtPtr ts_pt = TrajectoryPtPtr(new AxialSymmetricPt(gz_listen.t_x, gz_listen.t_y, STANDBY_HEIGHT, M_PI, 0, 0, M_PI/2.0, AxialSymmetricPt::Z_AXIS, TimingConstraint(5)));
+        //place ready pos
+        TrajectoryPtPtr tr_pt = TrajectoryPtPtr(new AxialSymmetricPt(gz_listen.t_x + X_COR, gz_listen.t_y + Y_COR, gz_listen.t_z + Z_COR, M_PI, 0, 0, M_PI/2.0, AxialSymmetricPt::Z_AXIS, TimingConstraint(5)));
+        
         //add dummy point if this is the start of execution
+        //this is needed because the controller skips the first point in trajectory
         if (points.empty())
         {
-            TrajectoryPtPtr dummy_pt;
-            for (int q = 0; q < 7; q++) joints.push_back(0);
-            dummy_pt = TrajectoryPtPtr( new JointTrajectoryPt(joints) );
             points.push_back(dummy_pt);
         }
 
-        //pickup standby pos
-        TrajectoryPtPtr ps_pt = TrajectoryPtPtr( new AxialSymmetricPt(gz_listen.x, gz_listen.y, STANDBY_HEIGHT, M_PI, 0, 0, .6/*M_PI/2.0*/, AxialSymmetricPt::Z_AXIS) );
-        //pickup ready pos
-        TrajectoryPtPtr pr_pt = TrajectoryPtPtr( new AxialSymmetricPt(gz_listen.x + X_COR, gz_listen.y + Y_COR, gz_listen.z + Z_COR, M_PI, 0, 0, .6/*M_PI/2.0*/, AxialSymmetricPt::Z_AXIS) );
-        //place standby pos
-        TrajectoryPtPtr ts_pt = TrajectoryPtPtr( new AxialSymmetricPt(gz_listen.t_x, gz_listen.t_y, STANDBY_HEIGHT, M_PI, 0, 0, .6/*M_PI/2.0*/, AxialSymmetricPt::Z_AXIS) );
-        //place ready pos
-        TrajectoryPtPtr tr_pt = TrajectoryPtPtr( new AxialSymmetricPt(gz_listen.t_x + X_COR, gz_listen.t_y + Y_COR, gz_listen.t_z + Z_COR, M_PI, 0, 0, .6/*M_PI/2.0*/, AxialSymmetricPt::Z_AXIS) );
-        
-        switch(t)
+        switch(task)
         {
             case PICK:
                 points.push_back(ps_pt);
                 points.push_back(pr_pt);
-                times.push_back(4);
-                times.push_back(5);
+                times.push_back(ps_pt->getTiming().upper);
+                times.push_back(pr_pt->getTiming().upper);
                 break;
             case PLACE:
                 points.push_back(ps_pt);
                 points.push_back(ts_pt);
                 points.push_back(tr_pt);
-                times.push_back(5);
-                times.push_back(8);
-                times.push_back(5);
+                times.push_back(ps_pt->getTiming().upper);
+                times.push_back(ts_pt->getTiming().upper);
+                times.push_back(tr_pt->getTiming().upper);
                 break;
             case RESET:
                 points.push_back(ts_pt);
-                times.push_back(5);
+                times.push_back(ts_pt->getTiming().upper);
                 break;
-        } //switch(t)
+        } //switch(task)
 
         //execute 
         // 4. Feed the trajectory to the planner
@@ -274,7 +279,7 @@ int main (int argc, char **argv)
         points.push_back( result.back() );
         result.clear();
 
-        switch(t)
+        switch(task)
         {
             case (PICK):
                 //close gripper
@@ -303,7 +308,7 @@ int main (int argc, char **argv)
                     gz_listen.target.assign("washer_0");
                 }
                 usleep(1000*1000);
-        } //switch(t)
-        t = (++t) % 3;
+        } //switch(task)
+        task = ++task % 3;
     } //while(true)
 }

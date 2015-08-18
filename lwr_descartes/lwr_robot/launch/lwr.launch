@@ -12,12 +12,17 @@
     <arg name="load_moveit" default="false"/>
 
     <!-- set some ros tools -->
-    <arg name="use_rviz" default="false"/>
-    <arg name="gui" default="false" />
     <arg name="use_joint_state_publisher" default="true"/>
 
 
     <!-- LAUNCH_IMPLEMENTATION -->
+    <!-- OVERVIEW:
+            1. Load the robot_description, controller configuration, and joint names to param server
+            2. Launch robot state publisher (which takes robot_description parameter)
+            3. Launch joint state publisher
+            4. Launch gazebo
+            5. Launch moveit
+            6. Spawn controllers by launching controller manager -->
     
     <!--launch gazebo-->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -32,7 +37,6 @@
         <arg name="verbose" value="true"/>
     </include>
 
-    <!-- the yaml file already specifies its in the lwr ns, maybe worth changing?-->
     <rosparam file="$(find lwr_robot)/config/controllers.yaml" command="load"/>
     <param name="robot_description" command="$(find xacro)/xacro.py $(find lwr_robot)/models/$(arg robot_name)/$(arg robot_name).urdf.xacro"/>
     <rosparam command="load" file="$(find lwr_robot)/config/joint_names.yaml"/>
@@ -64,16 +68,11 @@
         <!-- load urdf to param server -->
         <param name="robot_description" command="$(find xacro)/xacro.py $(find lwr_robot)/models/$(arg robot_name)/$(arg robot_name).urdf.xacro"/>
 
-        <!-- joint and robot state publishers of the full robot description -->
-        <param name="use_gui" value="$(arg gui)"/>
-
-
         <!-- NOTE: currently, this is done by spawning the sdf model using the
         world file. If you want to use the urdf directly, remove the model from 
         simple.world and uncomment the next line: -->
         <!--<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model $(arg robot_name)"  respawn="false" output="screen" />-->
 	    <!-- load moveit configuration -->
-
 
         <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="joint_state_controller $(arg controllers)"/>
 
