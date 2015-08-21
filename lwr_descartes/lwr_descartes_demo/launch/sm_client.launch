@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="sm_client_demo" pkg="lwr_descartes_demo" type="sm_client_demo" output="screen"
+    args=""/>
+</launch>

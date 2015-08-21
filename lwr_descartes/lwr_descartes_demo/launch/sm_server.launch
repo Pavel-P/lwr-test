@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="robot_description" default="robot_description"/>
+    <arg name="group_name" default="full_lwr"/>
+    <arg name="world_frame" default="world"/>
+    <arg name="tcp_frame" default="lwr_7_link"/>
+
+    <node name="sm_server_demo" pkg="lwr_descartes_demo" type="sm_server_demo" output="screen"
+    args="$(arg robot_description) $(arg group_name) $(arg world_frame) $(arg tcp_frame)"/>
+</launch>
